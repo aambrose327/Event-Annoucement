@@ -1,0 +1,108 @@
+#1 Create a REST API in API Gateway
+We need to set up a REST API to manage requests for subscribing users and creating events. To do this—
+Go to the API Gateway Console
+
+Create a New REST API:
+Select Create API > REST API > Build.
+Choose:
+API Details: New API
+API name: EventManagementAPI.
+Endpoint Type: Regional.
+Click Create API.
+
+#2 Create and Test the /subscribe Endpoint
+We need to connect the subscribeToSNSFunction Lambda function to a /subscribe endpoint for email subscriptions. To do this— 
+Add a Resource:
+Click on Create Resource.
+Enter:
+Resource Name: subscribe.
+Resource Path: /.
+Enable the CORS checkbox.
+Click Create Resource.
+
+Create a POST Method:
+Select the /subscribe resource.
+Click on Create Method > POST.
+Set the integration type to Lambda Function.
+Enter the Lambda function name: subscribeToSNSFunction.
+Click on Create Method.
+
+Enable CORS:
+Select the /subscribe POST method.
+Click on Enable CORS.
+Enable the checkboxes as shown below and click on Save.
+
+Add a mapping template:
+Select the /subscribe POST method. Click Integration Request. Click Edit.
+Under the Mapping Templates section, click Add mapping template.
+Enter application/json as the content type.
+In the text box that appears, add the following mapping template:
+{
+  "body": $input.json('$')
+}
+
+Role: Choose Use an existing role and select the IAM role you just created (LambdaSubscribeRole).
+Click on ‘Create Function’.
+This template wraps the entire request body within a body field, matching the Lambda function’s expectations.
+Click on Save. 
+
+Test the /subscribe Endpoint:
+In the API Gateway console, click Test on the POST method.
+Provide the following request body:
+{
+  "email": "user@example.com"
+}
+Click Test and verify that the Lambda function is invoked successfully.
+
+
+#3 Create and test the /create-event Endpoint
+Now, we need to connect the createEventFunction Lambda function to a /create-event endpoint for event creation. To do this—
+Add a Resource:
+Click on Create Resource.
+Enter:
+Resource Name: create-event.
+Resource Path: /.
+Click Create Resource.
+
+Create a POST Method:
+Select the /create-event resource.
+Click on Create Method > POST.
+Set the integration type to Lambda Function.
+Enable the Lambda Proxy integration toggle.
+Enter the Lambda function name: createEventFunction.
+
+Click Create Method. 
+Enable CORS:
+Select the /create-event POST method.
+Click on Enable CORS.
+Enable the checkboxes as given below and click on Save.
+
+Test the /create-event Endpoint:
+In the API Gateway console, click Test on the POST method.
+Provide the following request body:
+{
+  "title": "Tech Meetup",
+  "date": "2024-12-01",
+  "description": "A gathering of tech enthusiasts!"
+}
+Click Test and verify that:
+- The event is added to the events.json file in S3.
+- Subscribers receive a notification.
+
+#4 Deploy the API
+We need to make the API publicly accessible for external requests we need to deploy the API. To do this—
+Create a Deployment:
+In the API Gateway console, first click to your “/” path and then click on Deploy API.
+Select New Stage and enter:
+Stage name: dev.
+Click Deploy.
+
+Note the Invoke URLs:
+After deployment, copy Invoke URL:
+The invoke URL for your endpoints would be in the form— invokeURL/endpointName. For eg:
+- /subscribe: https://<api-id>.execute-api.<region>.amazonaws.com/dev/subscribe
+- /create-event: https://<api-id>.execute-api.<region>.amazonaws.com/dev/create-event
+Remember to copy these endpoints as we will be adding these endpoints in the code in the upcoming steps. 
+
+
+
