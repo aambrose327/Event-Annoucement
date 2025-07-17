@@ -1,0 +1,153 @@
+#1 Create an SNS Topic
+
+SNS (Simple Notification Service) will be used to notify subscribers when a new event is created. Here’s how to set it up:
+Go to the SNS Console
+Navigate to the AWS SNS Console.
+Go to Create Topic. Click on Next Step.
+Select Standard as the topic type.
+Provide a name for your topic
+
+Create the Topic
+Leave the rest as defaults. Click Create topic. 
+You’ll be directed to the topic details page where you can see the Topic ARN (Amazon Resource Name). This will be used in your Lambda functions to send messages to the topic.
+Note: Keep a copy of the Topic ARN for later use.
+
+#2 Create and Test the Subscription Lambda Function
+In this step, we will create the Subscription Lambda function that subscribes users to the SNS topic using their email address.
+
+- Create IAM Role for Lambda Function
+Before we create the Lambda function, we need to set up an IAM role that gives the Lambda function permissions to interact with AWS SNS (for subscribing users) and log to CloudWatch (for logging Lambda execution).
+
+Steps to Create the IAM Role:
+Navigate to IAM Console:
+Go to the IAM Console in AWS.
+On the left sidebar, select Roles, then click Create role.
+
+Choose a Trusted Entity:
+Select AWS service.
+For the use case, choose Lambda (this grants Lambda permissions to assume this role).
+
+Attach Permissions Policies:
+Search for and select the following policies:
+AmazonSNSFullAccess – This grants the Lambda function permission to interact with SNS (subscribe users).
+CloudWatchLogsPolicy – This allows logging to CloudWatch for debugging and monitoring.
+If you can’t find the CloudWatchLogsPolicy, you can use the predefined AWSLambdaBasicExecutionRole to grant CloudWatch logging permissions.
+
+Review and Create the Role:
+Give the role a name
+Click Create role to complete the process.
+
+2. Create the Subscription Lambda Function
+Now that we have the necessary IAM role, let’s create the Lambda function.
+
+Navigate to the Lambda Console:
+Go to the AWS Lambda Console and click Create function.
+
+Configure the Lambda Function:
+Function Name: Enter SubscribeToSNSFunction.
+Runtime: Choose Python 3.12
+Role: Choose Use an existing role and select the IAM role you just created 
+Click on ‘Create Function’.
+
+
+Function Code:
+In the code editor, replace the default code with the following code that handles email subscription to SNS:
+
+Explanation of Code:
+sns_client = boto3.client('sns'): This creates an SNS client to interact with SNS.
+sns_client.subscribe: This subscribes the provided email address to the SNS topic.
+The function checks if the email is present in the request body, and if so, subscribes it to the SNS topic using the provided ARN.
+NOTE: Replace the ‘enter-sns-topic-ARN’ with your SNS Topic ARN that we copied in the earlier step. 
+
+Save the Lambda Function:
+Click Deploy to save the Lambda function.
+
+3. Test the Lambda Function
+Now we’ll test the Lambda function to ensure that it works correctly. We’ll simulate an event where a user provides their email for subscription.
+
+Steps to Test the Lambda Function:
+Configure a Test Event:
+In the Lambda function console, click on Test.
+Give it a name like TestSubscribeEvent.
+Use the following JSON as the test event
+This simulates a request body containing the email 
+Click on Save.
+
+Run the Test:
+After configuring the test event, click on Test.
+The Lambda function should run, and you should see the log output in the Execution result section.
+The response should look like:
+
+Verify the Subscription:
+Check the email inbox for a confirmation email.
+The email should have a confirmation link from AWS SNS.
+Once the user confirms the subscription, the email will be successfully subscribed to the SNS topic.
+
+#3 Create and Test Event Creation Lambda Function
+
+In this step, we’ll set up the Event Creation Lambda Function to update the events.json file in your S3 bucket and send notifications using your SNS topic.
+1. Create an IAM Role for the Lambda Function:
+This role grants the necessary permissions for the Lambda function to:
+Read and write the events.json file in the S3 bucket.
+Publish messages to the SNS topic.
+Navigate to IAM console & Create a New Role:
+Click Create Role.
+Select AWS Service and choose Lambda.
+Click Next to proceed.
+
+Attach Policies:
+Select AWS managed policies:
+- AmazonS3FullAccess (or create a custom policy with restricted S3 access to your bucket).
+- AmazonSNSFullAccess (or create a custom policy with access to your SNS topic).
+Review and Create:
+Name the role, Click Create Role.
+
+2. Create the Event Creation Lambda Function
+This function will:
+Append new events to the events.json file stored in S3.
+Notify subscribers via SNS about the new event.
+Navigate to AWS Lambda console & Create the Function:
+Click Create Function and choose Author from scratch.
+Fill in the details:
+Function name: createEventFunction.
+Runtime: Python 3.12
+Select the IAM role created earlier. Click on Create Function
+
+Upload the Code
+
+Update the Configuration:
+Replace your-bucket-name with your S3 bucket name.
+Replace your-sns-topic-arn with your SNS topic ARN.
+Deploy the function.
+
+3. Test the Event Creation Lambda Function
+Verify that the Lambda function can update the events.json file in S3 and send notifications to SNS.
+Prepare a Test Event:
+{
+	"httpMethod": "POST",
+  "body": "{\"title\":\"Tech Meetup\",\"date\":\"2024-12-01\",\"description\":\"A gathering of tech enthusiasts!\"}"
+}
+
+Run the Test:
+Click Test and paste the JSON above.
+Name the test, 
+Click on Save and test the new test event.
+
+Verify the Output:
+Expected response
+{
+  "statusCode": 200,
+  "body": "{\"message\": \"Event created successfully!\"}"
+}
+
+Confirm that:
+- The events.json file in S3 was updated with the new event. (You can download the events.json and check if you are curious or check the last modified time for events.json to make sure there was an update)
+- Subscribers received an email notification about the new event.
+
+
+
+
+
+
+
+
