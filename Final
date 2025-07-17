@@ -1,0 +1,36 @@
+#1 Update the Frontend Code
+
+Integrate the API Gateway endpoints into the index.html file by replacing the placeholders with the actual URLs of the /subscribe and /create-event API Gateway endpoints.
+Replace the relevant sections of the script in index.html:
+Replace <YOUR_SUBSCRIBE_API_ENDPOINT> and <YOUR_CREATE_EVENT_API_ENDPOINT> with the actual API Gateway URLs for the /subscribe and /create-event endpoints, respectively.
+Where to get these API Gateway URLs? As mentioned earlier, from your AWS Console navigate to API Gateway → <YOUR_API_NAME> → From the sidebar, goto Stages → Copy the Invoke URL
+Now replace <YOUR_SUBSCRIBE_API_ENDPOINT>by <INVOKE_URL>/subscribe and <YOUR_CREATE_EVENT_API_ENDPOINT> by <INVOKE_URL>/create-event
+
+
+#2 Upload the Updated Files to S3
+
+Navigate to the S3 Console:- Open the AWS Management Console and navigate to S3.
+Access the Bucket:
+- Open the S3 bucket where your website is hosted.
+Reupload the Updated Files:
+- Delete the existing index.html file.
+- Upload the updated index.html file along with any other updated assets (if applicable).
+#3 Test the Website
+
+Once the updates are live, thoroughly test the website to ensure all functionalities are working as expected:
+Access the Website:
+Open your website in a browser using the URL (The S3 bucket URL).
+est the Subscription Feature:
+Click on the "Subscribe to Events" button.
+Enter your email address when prompted.
+Verify that you receive a subscription confirmation email.
+Confirm the subscription through the email.
+
+Test the Create Event Feature:
+Click on the "Create New Event" button.
+Fill in the event details (title, date, description) and submit the form.
+
+Verify that:
+You get the successful event creation message.
+Subscribers receive an email notification about the new event.
+The new event appears on the website after refreshing the page.
