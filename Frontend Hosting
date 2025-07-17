@@ -1,0 +1,59 @@
+#1 Create The Website Frontend Files
+This step involves creating and hosting the frontend for the event announcements project using S3 static website hosting.
+
+Overview of the Frontend Code
+The frontend consists of three main files:
+1) index.html: Provides the structure and content of the website.
+- Displays the list of events from events.json.
+- Contains a form to create new events.
+- Includes a "Subscribe" button to collect user email addresses for notifications.
+2) styles.css: Handles the visual appearance and layout.
+3) events.json: A JSON file that stores event data, including the event title, date, and description.
+
+Below is a brief explanation of what the main components in index.html do.
+Header Section:
+- Contains the project title and a "Subscribe to Events" button.
+- The subscribeToEvents() function is triggered when the button is clicked.
+
+Events Section:
+- Allows users to add a new event with a title, date, and description.
+- The form uses the submitNewEvent(event) function to send the data to the backend API.
+
+JavaScript Code:
+- loadEvents(): Fetches and displays events from events.json.
+- subscribeToEvents(): Sends user email to the backend for notifications via SNS.
+- submitNewEvent(event): Sends new event details to the backend API for saving to events.json.
+
+#2 Create an S3 Bucket
+Open the AWS Management Console and navigate to the S3 service.
+Click "Create bucket" & configure Bucket Name (Use a unique name)
+Region: Select the same region where your backend services will be hosted (e.g., ap-south-1).
+Block Public Access: Disable "Block all public access" so the bucket can be used for static website hosting.
+Click "Create bucket".
+
+
+#3 Upload Website Files to S3
+Open the S3 bucket.
+Click "Upload", select the files (index.html, styles.css, and events.json), and upload them
+Ensure that public-read access is enabled for these files.
+
+#4 Enable Static Website Hosting
+
+In the S3 bucket, go to the "Properties" tab.
+Scroll to Static website hosting and enable it.
+Select "Host a static website".
+Enter index.html as the Index Document and leave the Error Document blank.
+Save the configuration.
+
+
+#5 Set Permissions for Public Access
+Navigate to the "Permissions" tab and navigate to the Bucket Policy. Click on Edit.
+Add the policy as given below and click on save changes
+Note: Replace <YOUR-UNIQUE-BUCKET-NAME> with your bucket name.
+
+
+#6 Verify the Website
+Copy the Bucket Website Endpoint from the Static website hosting settings.
+Open the URL in a browser to confirm that the website loads successfully.
+
+
